@@ -14,13 +14,12 @@ class DBaaS(object):
         return get(final_url, auth=self._base_auth, verify=self._verify)
 
     def latest_tasks(self):
-        response = self.api_get('task')
+        response = self.api_get('task/?ordering=-id&page_size=100')
         content = response.json()
 
         tasks = {}
         for task in content['taskhistory']:
             tasks[task['task_id']] = task['task_status']
-
         return tasks
 
     def build_task_link(self, task_id):

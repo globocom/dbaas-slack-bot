@@ -28,7 +28,7 @@ def main():
                 notified[task_id] = False
 
         info('Size of notified: {}'.format(len(notified)))
-        sleep(60)
+        sleep(15)
 
 
 if __name__ == '__main__':
