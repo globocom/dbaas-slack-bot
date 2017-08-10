@@ -1,11 +1,11 @@
 from slackclient import SlackClient
-from settings import SLACK_TOKEN
+from settings import SLACK_TOKEN, SLACK_PROXIES
 
 
 class Bot(object):
 
     def __init__(self):
-        self.slack_client = SlackClient(SLACK_TOKEN)
+        self.slack_client = SlackClient(SLACK_TOKEN, SLACK_PROXIES)
 
     @property
     def my_channels(self):
