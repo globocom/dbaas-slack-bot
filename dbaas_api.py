@@ -17,12 +17,55 @@ class DBaaS(object):
         response = self.api_get('task/?ordering=-id&page_size=100')
         content = response.json()
 
-        tasks = {}
+        tasks = []
         for task in content['taskhistory']:
-            tasks[task['task_id']] = task['task_status']
+            tasks.append(Task(task))
         return tasks
 
     def build_task_link(self, task_id):
         return '{}/admin/notification/taskhistory/?task_id={}'.format(
             DBAAS_URL, task_id
         )
+
+
+class Task(object):
+
+    STATUS_ERROR = 'ERROR'
+    DBAAS_TASK_URL = '{}/admin/notification/taskhistory/{}'
+
+    def __init__(self, api_content):
+        self.id = api_content['id']
+        self.executor_id = api_content['task_id']
+        self.status = api_content['task_status']
+        self.name = api_content['task_name'].rsplit('.', 1)[-1]
+
+        self.database_id = None
+        if api_content['object_class'] == 'logical_database':
+            self.database_id = api_content['object_id']
+
+        self.user = api_content['user']
+        self.started_at = api_content['created_at']
+        self.updated_at = api_content['updated_at']
+        self.link = self.DBAAS_TASK_URL.format(DBAAS_URL, self.id)
+
+    @property
+    def is_error(self):
+        return self.status == self.STATUS_ERROR
+
+    def as_message(self):
+        """
+            Error in 'database' doing 'resize', by user at 2017-06-11 link
+            Error doing 'update_status', at 2017-06-12 link
+        """
+        message = '{} '.format(self.status.capitalize(), self.name)
+
+        if self.database_id:
+            message += 'in \'{}\' '.format(self.database_id)
+
+        message += 'doing \'{}\', '.format(self.name)
+        if self.user:
+            message += 'by {} '.format(self.user)
+
+        message += 'at {} - {}'.format(self.updated_at, self.link)
+
+        return message
