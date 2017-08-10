@@ -1,36 +1,29 @@
 from time import sleep
 from logging import info, basicConfig, INFO
-from slack_bot import Bot
 from dbaas_api import DBaaS
+from persist import Persistence
+from slack_bot import Bot
 
 
 def main():
     basicConfig(level=INFO)
     bot = Bot()
     dbaas = DBaaS()
-    notified = {}
+    persistence = Persistence()
 
     while True:
         tasks = dbaas.latest_tasks()
-        for task_id, task_status in tasks.items():
-            if task_status != 'ERROR':
+        for task in tasks:
+            if not task.is_error:
                 continue
 
-            if task_id not in notified:
-                task_link = dbaas.build_task_link(task_id)
-                bot.send_message('Error: {}'.format(task_link))
+            if not persistence.was_notified(task):
+                info('Notifying {}'.format(task.id))
+                bot.send_message(task.as_message())
 
-            notified[task_id] = 3000
+            info('Updating TTL to {}'.format(task.id))
+            persistence.set_notified(task)
 
-        for task_id, ttl in notified.items():
-            ttl -= 1
-            notified[task_id] = ttl
-
-            if ttl <= 0:
-                info('Removing notified {}...'.format(task_id))
-                notified.pop(task_id)
-
-        info('Size of notified: {}'.format(len(notified)))
         sleep(15)
 
 
