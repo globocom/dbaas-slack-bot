@@ -1,2 +1,5 @@
 slackclient
 redis
+flask
+gunicorn
+gevent
