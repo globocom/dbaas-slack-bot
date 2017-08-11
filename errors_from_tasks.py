@@ -11,7 +11,7 @@ def main():
     dbaas = DBaaS()
     persistence = Persistence()
 
-    info('Loading oldest data')
+    info('Loading oldest tasks')
     tasks = dbaas.latest_tasks()
     for task in tasks:
         persistence.set_notified(task)
