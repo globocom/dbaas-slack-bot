@@ -1,5 +1,5 @@
 from random import randint
-from flask import Flask, abort, request, json
+from flask import Flask, request
 from slack_bot import Bot
 from persist import Persistence
 
