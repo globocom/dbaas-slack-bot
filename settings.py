@@ -1,7 +1,7 @@
 from os import getenv
 
 
-DBAAS_URL = getenv('DBAAS_URL', '127.0.0.1')
+DBAAS_URL = getenv('DBAAS_URL', 'http://127.0.0.1:8000')
 DBAAS_USER = getenv('DBAAS_USER', 'dbaas_bot')
 DBAAS_PASSWORD = getenv('DBAAS_PASSWORD', 'bot_pwd')
 DBAAS_HTTPS_VERIFY = getenv('DBAAS_HTTPS_VERIFY', 'False').upper() == 'TRUE'
@@ -22,3 +22,6 @@ if SLACK_HTTP_PROXIES or SLACK_HTTPS_PROXIES:
 
 REDIS_URL_CONNECTION = getenv('DBAAS_REDIS_ENDPOINT', 'redis:127.0.0.1:6379/0')
 REDIS_KEY_TTL = getenv('REDIS_KEY_TTL', 86400)  # 1 Day
+
+
+API_ENDPOINT = getenv('API_ENDPOINT', 'http://127.0.0.1:5000')
