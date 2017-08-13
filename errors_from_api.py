@@ -1,7 +1,6 @@
-from random import randint
 from flask import Flask, request
 from slack_bot import Bot
-from persist import Persistence
+from healthchecks import bot_check, persistence_check
 
 
 app = Flask(__name__)
@@ -9,20 +8,13 @@ app = Flask(__name__)
 
 @app.route("/healthcheck", methods=['GET'])
 def health_check():
-    key, value = 'HEALTH_CHECK', randint(0, 100000)
-    try:
-        persistence = Persistence()
-        persistence.client.set(key, value)
-        assert int(persistence.client.get(key)) == value
-        persistence.client.delete(key)
-    except Exception as e:
-        return 'WARNING - REDIS - {}'.format(e), 500
+    persistence_status, error = persistence_check()
+    if not persistence_status:
+        return 'WARNING - REDIS - {}'.format(error), 500
 
-    try:
-        bot = Bot()
-        assert len(bot.my_channels) > 0
-    except Exception as e:
-        return 'WARNING - SLACK - {}'.format(e), 500
+    bot_status, error = bot_check()
+    if not bot_status:
+        return 'WARNING - SLACK - {}'.format(error), 500
 
     return 'WORKING', 200
 
