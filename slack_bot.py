@@ -49,23 +49,23 @@ class Bot(object):
 
 
 class BotMessage(object):
-    HELP_TEXTS = ['help']
-    STATUS_TEXTS = ['status', 'how are you?', 'healthcheck', 'health-check']
 
     @classmethod
     def build(cls, channel, text):
         parsed_text = text.lower()
-        if parsed_text in cls.HELP_TEXTS:
-            return BotMessageHelp(channel, text)
-
-        if parsed_text in cls.STATUS_TEXTS:
-            return BotMessageStatus(channel, text)
+        for klass in cls.__subclasses__():
+            if parsed_text in klass.commands:
+                return klass(channel, text)
 
         return BotMessageInvalid(channel, text)
 
     def __init__(self, channel, text):
         self.channel = channel
         self.text = text
+
+    @property
+    def commands(self):
+        raise NotImplementedError
 
     @property
     def message(self):
@@ -78,20 +78,44 @@ class BotMessage(object):
 class BotMessageHelp(BotMessage):
 
     @property
+    def commands(self):
+        return ["help"]
+
+    @property
     def message(self):
-        return "Mensagem nova pra validar as cozas"
+        return \
+            """
+            You can use:
+            help: For usage info
+            status: Check all bot services status
+            """
 
 
 class BotMessageStatus(BotMessage):
 
     @property
+    def commands(self):
+        return ['status', 'how are you?', 'healthcheck', 'health-check']
+
+    @property
     def message(self):
-        return "I'm a dbaas-error-bot and it's a status message"
+        return \
+            """
+            Everything is good like a sun day
+            Redis:
+            Slack:
+            API:
+            """
 
 
 class BotMessageInvalid(BotMessageHelp):
 
     @property
+    def commands(self):
+        return []
+
+    @property
     def message(self):
-        base_help = super(BotMessageInvalid, self).message
-        return "I do not understand it {}".format(self.text) + base_help
+        help_message = super(BotMessageInvalid, self).message
+        invalid_message = "I do not understand '{}'".format(self.text)
+        return '{}\n{}'.format(invalid_message, help_message)
