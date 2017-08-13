@@ -27,6 +27,11 @@ def health_check():
     return 'WORKING', 200
 
 
+@app.route("/healthcheck/api", methods=['GET'])
+def health_check_api():
+    return 'WORKING', 200
+
+
 @app.route("/notify", methods=['POST'])
 def send_notification():
     content = request.get_json()
@@ -43,4 +48,4 @@ def send_notification():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
