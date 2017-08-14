@@ -8,8 +8,11 @@ def main():
     bot = Bot()
 
     info('Connection Slack')
-    bot.slack_client.rtm_connect()
-    info('Connected')
+    if not bot.slack_client.rtm_connect():
+        info('Could not connect in web_socket')
+        exit()
+    else:
+        info('Connected')
 
     while True:
         sleep(0.5)
