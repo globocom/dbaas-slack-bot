@@ -1,5 +1,5 @@
 from logging import debug
-from healthchecks import bot_check, api_check, persistence_check
+from healthchecks import api_check, bot_check, dbaas_check, persistence_check
 from slackclient import SlackClient
 from settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
 
@@ -106,20 +106,21 @@ class BotMessageStatus(BotMessage):
     def message(self):
         api, api_status = api_check()
         bot, bot_status = bot_check()
+        dbaas, dbaas_status = dbaas_check()
         persistence, persistence_status = persistence_check()
 
-        total = sum([api, bot, persistence])
-        if total == 3:
+        total = sum([api, bot, dbaas, persistence])
+        if total >= 4:
             message = 'Everything is fine'
-        elif total == 2:
+        elif total >= 3:
             message = 'I\'m with one problem'
-        elif total == 1:
+        elif total >= 1:
             message = 'I\'m in trouble'
         else:
-            message = 'Nothing is work, sorry'
+            message = 'Nothing is working, sorry'
 
-        return '{}\nAPI: {}\nRedis: {}\nSlack: {}'.format(
-            message, api_status, persistence_status, bot_status
+        return '{}\nAPI: {}\nDBaaS: {}\nRedis: {}\nSlack: {}'.format(
+            message, api_status, dbaas_status, persistence_status, bot_status
         )
 
 

@@ -16,7 +16,7 @@ def main():
 
     while True:
         sleep(0.5)
-        for message in bot.get_messages():
+        for message in bot.get_direct_messages():
             info(message)
             bot.send_message_in_channel(message.message, message.channel)
 
