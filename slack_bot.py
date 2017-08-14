@@ -8,6 +8,7 @@ class Bot(object):
 
     def __init__(self):
         self.slack_client = SlackClient(SLACK_TOKEN, SLACK_PROXIES)
+        self.name = '<@{}>'.format(SLACK_BOT_ID)
 
     @property
     def my_channels(self):
@@ -34,7 +35,7 @@ class Bot(object):
         debug(commands)
         return commands
 
-    def get_messages(self):
+    def get_direct_messages(self):
         commands = self.receive_command()
         if not commands:
             return None
@@ -43,10 +44,16 @@ class Bot(object):
             if command['type'] != 'message':
                 continue
 
-            if command.get('bot_id', '') == SLACK_BOT_ID:
+            if self.name not in command['text']:
                 continue
 
-            yield BotMessage.build(command['channel'], command['text'])
+            if command.get('user', '') == SLACK_BOT_ID:
+                continue
+
+            text_cleaned = command['text'].replace(self.name, '')
+            text_cleaned = text_cleaned.strip()
+
+            yield BotMessage.build(command['channel'], text_cleaned)
 
 
 class BotMessage(object):
@@ -111,8 +118,8 @@ class BotMessageStatus(BotMessage):
         else:
             message = 'Nothing is work, sorry'
 
-        return '{}\nAPI: {}\nSlack: {}\nRedis: {}'.format(
-            message, api_status, bot_status, persistence_status
+        return '{}\nAPI: {}\nRedis: {}\nSlack: {}'.format(
+            message, api_status, persistence_status, bot_status
         )
 
 
