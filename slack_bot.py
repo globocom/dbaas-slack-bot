@@ -1,4 +1,5 @@
 from logging import debug
+from healthchecks import bot_check, api_check, persistence_check
 from slackclient import SlackClient
 from settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
 
@@ -54,7 +55,7 @@ class BotMessage(object):
     def build(cls, channel, text):
         parsed_text = text.lower()
         for klass in cls.__subclasses__():
-            if parsed_text in klass.commands:
+            if parsed_text in klass.commands():
                 return klass(channel, text)
 
         return BotMessageInvalid(channel, text)
@@ -63,7 +64,7 @@ class BotMessage(object):
         self.channel = channel
         self.text = text
 
-    @property
+    @classmethod
     def commands(self):
         raise NotImplementedError
 
@@ -77,40 +78,47 @@ class BotMessage(object):
 
 class BotMessageHelp(BotMessage):
 
-    @property
+    @classmethod
     def commands(self):
         return ["help"]
 
     @property
     def message(self):
-        return \
-            """
-            You can use:
-            help: For usage info
-            status: Check all bot services status
-            """
+        return "You can use:\n  " \
+               "help: For usage info\n  " \
+               "status: Check status of all bot services"
 
 
 class BotMessageStatus(BotMessage):
 
-    @property
+    @classmethod
     def commands(self):
         return ['status', 'how are you?', 'healthcheck', 'health-check']
 
     @property
     def message(self):
-        return \
-            """
-            Everything is good like a sun day
-            Redis:
-            Slack:
-            API:
-            """
+        api, api_status = api_check()
+        bot, bot_status = bot_check()
+        persistence, persistence_status = persistence_check()
+
+        total = sum([api, bot, persistence])
+        if total == 3:
+            message = 'Everything is fine'
+        elif total == 2:
+            message = 'I\'m with one problem'
+        elif total == 1:
+            message = 'I\'m in trouble'
+        else:
+            message = 'Nothing is work, sorry'
+
+        return '{}\nAPI: {}\nSlack: {}\nRedis: {}'.format(
+            message, api_status, bot_status, persistence_status
+        )
 
 
 class BotMessageInvalid(BotMessageHelp):
 
-    @property
+    @classmethod
     def commands(self):
         return []
 
