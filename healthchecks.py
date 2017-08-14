@@ -1,11 +1,8 @@
-from random import randint
-from requests import get
-from persist import Persistence
-from settings import API_ENDPOINT
-from slack_bot import Bot
-
 
 def persistence_check():
+    from random import randint
+    from persist import Persistence
+
     key, value = 'HEALTH_CHECK', randint(0, 100000)
     try:
         persistence = Persistence()
@@ -19,6 +16,7 @@ def persistence_check():
 
 
 def bot_check():
+    from slack_bot import Bot
     try:
         bot = Bot()
         assert len(bot.my_channels) > 0
@@ -29,6 +27,9 @@ def bot_check():
 
 
 def api_check():
+    from requests import get
+    from settings import API_ENDPOINT
+
     try:
         response = get(API_ENDPOINT + '/healthcheck/api')
         assert response.text == 'WORKING'
