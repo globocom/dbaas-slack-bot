@@ -27,6 +27,9 @@ def health_check_api():
 @app.route("/notify", methods=['POST'])
 def send_notification():
     content = request.get_json()
+    if not content:
+        return 'Could not load the json', 400
+
     message = content.get('message', '')
     if not message:
         return 'Content must have message field', 400
