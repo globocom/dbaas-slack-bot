@@ -13,8 +13,9 @@ class DBaaS(object):
         final_url = '{}/api/{}'.format(DBAAS_URL, endpoint)
         return get(final_url, auth=self._base_auth, verify=self._verify)
 
-    def latest_tasks(self):
-        response = self.api_get('task/?ordering=-id&page_size=100')
+    def latest_tasks(self, page_size=100):
+        tasks_url = 'task/?ordering=-id&page_size={}'.format(page_size)
+        response = self.api_get(tasks_url)
         content = response.json()
 
         tasks = []

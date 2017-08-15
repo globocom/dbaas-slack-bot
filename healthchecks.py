@@ -43,7 +43,7 @@ def dbaas_check():
     from dbaas_api import DBaaS
 
     try:
-        assert len(DBaaS().latest_tasks()) > 0
+        assert len(DBaaS().latest_tasks(page_size=1)) == 1
     except Exception as e:
         return False, e
     else:
