@@ -92,7 +92,6 @@ class BotMessageHelp(BotMessage):
     @property
     def message(self):
         return "You can use:\n  " \
-               "help: For usage info\n  " \
                "status: Check status of all bot services"
 
 
