@@ -1,5 +1,5 @@
 from redis import StrictRedis
-from settings import REDIS_URL_CONNECTION, REDIS_KEY_TTL
+from src.settings import REDIS_URL_CONNECTION, REDIS_KEY_TTL
 
 
 class Persistence(object):

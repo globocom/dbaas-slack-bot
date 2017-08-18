@@ -1,7 +1,8 @@
 from logging import debug
-from healthchecks import api_check, bot_check, dbaas_check, persistence_check
 from slackclient import SlackClient
-from settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
+from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
+from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
+    persistence_check
 
 
 class Bot(object):

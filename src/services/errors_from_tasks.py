@@ -1,8 +1,8 @@
-from time import sleep
 from logging import info, basicConfig, INFO
-from dbaas_api import DBaaS
-from persist import Persistence
-from slack_bot import Bot
+from time import sleep
+from src.dbaas.dbaas_api import DBaaS
+from src.persistence.persist import Persistence
+from src.slack.slack_bot import Bot
 
 
 def main():

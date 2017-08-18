@@ -1,6 +1,7 @@
 from requests import get
 from requests.auth import HTTPBasicAuth
-from settings import DBAAS_URL, DBAAS_USER, DBAAS_PASSWORD, DBAAS_HTTPS_VERIFY
+from src.settings import DBAAS_URL, DBAAS_USER, DBAAS_PASSWORD, \
+    DBAAS_HTTPS_VERIFY
 
 
 class DBaaS(object):

@@ -1,7 +1,7 @@
 
 def persistence_check():
     from random import randint
-    from persist import Persistence
+    from src.persistence.persist import Persistence
 
     key, value = 'HEALTH_CHECK', randint(0, 100000)
     try:
@@ -16,7 +16,7 @@ def persistence_check():
 
 
 def bot_check():
-    from slack_bot import Bot
+    from src.slack.slack_bot import Bot
     try:
         bot = Bot()
         assert len(bot.my_channels) > 0
@@ -28,7 +28,7 @@ def bot_check():
 
 def api_check():
     from requests import get
-    from settings import API_ENDPOINT
+    from src.settings import API_ENDPOINT
 
     try:
         response = get(API_ENDPOINT + '/healthcheck/api')
@@ -40,7 +40,7 @@ def api_check():
 
 
 def dbaas_check():
-    from dbaas_api import DBaaS
+    from src.dbaas.dbaas_api import DBaaS
 
     try:
         assert len(DBaaS().latest_tasks(page_size=1)) == 1

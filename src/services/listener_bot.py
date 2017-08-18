@@ -1,6 +1,6 @@
-from time import sleep
 from logging import info, basicConfig, INFO
-from slack_bot import Bot
+from time import sleep
+from src.slack.slack_bot import Bot
 
 
 def main():

@@ -1,9 +1,9 @@
 from flask import Flask, request
-from slack_bot import Bot
-from healthchecks import bot_check, persistence_check
+from src.slack.slack_bot import Bot
+from src.utils.healthchecks import bot_check, persistence_check
 
 
-app = Flask(__name__)
+app = Flask('errors_from_api')
 
 
 @app.route("/healthcheck", methods=['GET'])
@@ -43,4 +43,4 @@ def send_notification():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
