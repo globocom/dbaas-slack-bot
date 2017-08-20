@@ -34,6 +34,7 @@ class Task(object):
 
     STATUS_ERROR = 'ERROR'
     DBAAS_TASK_URL = '{}/admin/notification/taskhistory/{}'
+    OBJ_CLASS_DATABASE = 'logical_database'
 
     def __init__(self, api_content):
         self.id = api_content['id']
@@ -42,7 +43,7 @@ class Task(object):
         self.name = api_content['task_name'].rsplit('.', 1)[-1]
 
         self.database_id = None
-        if api_content['object_class'] == 'logical_database':
+        if api_content['object_class'] == self.OBJ_CLASS_DATABASE:
             self.database_id = api_content['object_id']
 
         self.user = api_content['user']
