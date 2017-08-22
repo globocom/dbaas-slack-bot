@@ -122,4 +122,3 @@ class TestDBaaSTasks(TestCase):
                 self.task.link
             )
         )
-
