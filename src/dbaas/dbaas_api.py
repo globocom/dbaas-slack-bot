@@ -24,11 +24,6 @@ class DBaaS(object):
             tasks.append(Task(task))
         return tasks
 
-    def build_task_link(self, task_id):
-        return '{}/admin/notification/taskhistory/?task_id={}'.format(
-            DBAAS_URL, task_id
-        )
-
 
 class Task(object):
 
