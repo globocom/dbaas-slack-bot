@@ -40,7 +40,7 @@ class TestDBaaSTasks(TestCase):
             page_size = 100
 
         api_get_method.assert_called_once_with(
-            'task/?ordering=-id&page_size={}'.format(page_size)
+            'task/?ordering=-updated_at&page_size={}'.format(page_size)
         )
 
     @patch('src.dbaas.dbaas_api.DBaaS.api_get')
