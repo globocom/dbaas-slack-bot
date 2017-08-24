@@ -1,4 +1,4 @@
-from logging import debug
+from logging import debug, info
 from slackclient import SlackClient
 from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
 from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
@@ -42,6 +42,10 @@ class Bot(object):
             return None
 
         for command in commands:
+            if 'type' not in command:
+                info('Type not found in {}'.format(command))
+                continue
+
             if command['type'] != 'message':
                 continue
 
