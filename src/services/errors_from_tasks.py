@@ -48,7 +48,6 @@ def main():
                 info('Notifying {}'.format(task.id))
                 bot.send_message(task.as_message())
 
-            info('Updating TTL to {}'.format(task.id))
             persistence.set_notified(task)
 
         sleep(15)
