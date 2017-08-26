@@ -1,5 +1,6 @@
 from logging import debug, info
 from slackclient import SlackClient
+from websocket._exceptions import WebSocketConnectionClosedException
 from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
 from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
     persistence_check
@@ -32,7 +33,11 @@ class Bot(object):
             self.send_message_in_channel(message, channel)
 
     def receive_command(self):
-        commands = self.slack_client.rtm_read()
+        try:
+            commands = self.slack_client.rtm_read()
+        except WebSocketConnectionClosedException:
+            return
+
         debug(commands)
         return commands
 
