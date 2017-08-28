@@ -1,5 +1,6 @@
 from logging import info, debug, basicConfig, INFO
 from time import sleep
+from requests.exceptions import ConnectionError
 from src.dbaas.dbaas_api import DBaaS
 from src.persistence.persist import Persistence
 from src.slack.slack_bot import Bot
