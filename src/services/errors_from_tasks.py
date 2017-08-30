@@ -39,6 +39,8 @@ def main():
                     'problem in DBaaS API\n{}'.format(e)
                 )
         else:
+            if errors_count > 0:
+                info('DBaaS API is working, resetting error counter')
             errors_count = 0
 
         for task in tasks:
