@@ -17,6 +17,14 @@ class DBaaS(object):
     def latest_tasks(self, page_size=100):
         tasks_url = 'task/?ordering=-updated_at&page_size={}'.format(page_size)
         response = self.api_get(tasks_url)
+
+        if response.status_code != 200:
+            raise ConnectionError(
+                'Problem with DBaaS api\n{}-{}'.format(
+                    response.status_code, response.content
+                )
+            )
+
         content = response.json()
 
         tasks = []
