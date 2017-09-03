@@ -15,7 +15,7 @@ def main():
         info('Connected')
 
     while True:
-        sleep(0.5)
+        sleep(1)
         for message in bot.get_direct_messages():
             info(message)
             bot.send_message_in_channel(message.message, message.channel)
