@@ -74,3 +74,18 @@ class TestDBaaSTasks(TestCase):
 
         tasks = self.api.latest_tasks()
         self.assertEqual(len(tasks), 2)
+
+    def test_latest_tasks_error(self):
+        with patch('src.dbaas.dbaas_api.DBaaS.api_get') as api_get_method:
+            error_code = 500
+            error_msg = 'Internal server error'
+            api_get_method.return_value.status_code = error_code
+            api_get_method.return_value.content = error_msg
+            self.assertRaises(ConnectionError, self.api.latest_tasks)
+
+            try:
+                self.api.latest_tasks()
+            except Exception as e:
+                self.assertIn(str(error_code), str(e))
+                self.assertIn(error_msg, str(e))
+                self.assertIn('Problem with DBaaS api', str(e))
