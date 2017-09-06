@@ -28,35 +28,35 @@ class TestDBaaSTasks(TestCase):
             final_url, auth=self.api._base_auth, verify=self.api._verify
         )
 
-    def latest_tasks_page_size_tests(self, page_size, api_get_method):
-        api_get_method.json.return_value = {'taskhistory': []}
+    def latest_tasks_page_size_tests(self, page_size):
+        with patch('src.dbaas.dbaas_api.DBaaS.api_get') as api_get_method:
+            api_get_method.json.return_value = {'taskhistory': []}
+            api_get_method.return_value.status_code = 200
 
-        if page_size:
-            self.api.latest_tasks(page_size)
-        else:
-            self.api.latest_tasks()
+            if page_size:
+                self.api.latest_tasks(page_size)
+            else:
+                self.api.latest_tasks()
 
-        if not page_size:
-            page_size = 100
+            if not page_size:
+                page_size = 100
 
-        api_get_method.assert_called_once_with(
-            'task/?ordering=-updated_at&page_size={}'.format(page_size)
-        )
+            api_get_method.assert_called_once_with(
+                'task/?ordering=-updated_at&page_size={}'.format(page_size)
+            )
 
-    @patch('src.dbaas.dbaas_api.DBaaS.api_get')
-    def test_latest_tasks_page_size_default(self, api_get_method):
-        self.latest_tasks_page_size_tests(None, api_get_method)
+    def test_latest_tasks_page_size_default(self):
+        self.latest_tasks_page_size_tests(None)
 
-    @patch('src.dbaas.dbaas_api.DBaaS.api_get')
-    def test_latest_tasks_page_size_bigger(self, api_get_method):
-        self.latest_tasks_page_size_tests(150, api_get_method)
+    def test_latest_tasks_page_size_bigger(self):
+        self.latest_tasks_page_size_tests(150)
 
-    @patch('src.dbaas.dbaas_api.DBaaS.api_get')
-    def test_latest_tasks_page_size_small(self, api_get_method):
-        self.latest_tasks_page_size_tests(1, api_get_method)
+    def test_latest_tasks_page_size_small(self):
+        self.latest_tasks_page_size_tests(1)
 
     @patch('src.dbaas.dbaas_api.DBaaS.api_get')
     def test_latest_tasks_content(self, api_get_method):
+        api_get_method.return_value.status_code = 200
         api_get_method().json.return_value = {'taskhistory': [
             {
                 'id': 1090, 'task_id': 'iiioo-xxxsads', 'task_status': 'ERROR',
