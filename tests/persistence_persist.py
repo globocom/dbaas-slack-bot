@@ -25,8 +25,7 @@ class TestPersist(TestCase):
         redis_from_url.assert_called_once_with(REDIS_URL_CONNECTION)
         self.assertEqual(persistence.ttl_seconds, REDIS_KEY_TTL)
 
-    @patch('src.persistence.persist.StrictRedis.from_url')
-    def test_notified(self, redis_from_url):
+    def test_notified(self):
         persistence = Persistence()
         persistence.client = FakeCache()
 
