@@ -1,6 +1,5 @@
 from logging import debug, info
 from slackclient import SlackClient
-from websocket._exceptions import WebSocketConnectionClosedException
 from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
 from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
     persistence_check
@@ -11,6 +10,7 @@ class Bot(object):
     def __init__(self):
         self.slack_client = SlackClient(SLACK_TOKEN, SLACK_PROXIES)
         self.name = '<@{}>'.format(SLACK_BOT_ID)
+        self.rtm_reconnect_url = None
 
     @property
     def my_channels(self):
@@ -35,11 +35,34 @@ class Bot(object):
     def receive_command(self):
         try:
             commands = self.slack_client.rtm_read()
-        except WebSocketConnectionClosedException:
-            return
+        except Exception as e:
+            if not self.rtm_reconnect_url:
+                return e
+
+            info('Trying to reconnect in {}'.format(self.rtm_reconnect_url))
+            self.slack_client.server.connect_slack_websocket(
+                self.rtm_reconnect_url
+            )
+            self.rtm_reconnect_url = None
+            return self.receive_command()
+
 
         debug(commands)
+
+        self.get_reconnect_url(commands)
+
         return commands
+
+    def get_reconnect_url(self, commands):
+        for command in commands:
+            if 'type' not in command:
+                continue
+
+            if command['type'] != 'reconnect_url':
+                continue
+
+            self.rtm_reconnect_url = command['url']
+
 
     def get_direct_messages(self):
         commands = self.receive_command()
@@ -47,8 +70,8 @@ class Bot(object):
             return None
 
         for command in commands:
-            if 'type' not in command:
-                info('Type not found in {}'.format(command))
+            if not('type' in command and 'text' in command):
+                debug('Content invalid in {}'.format(command))
                 continue
 
             if command['type'] != 'message':
