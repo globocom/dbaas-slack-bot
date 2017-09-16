@@ -43,7 +43,10 @@ class Task(object):
         self.id = api_content['id']
         self.executor_id = api_content['task_id']
         self.status = api_content['task_status']
-        self.name = api_content['task_name'].rsplit('.', 1)[-1]
+
+        self.name = api_content['task_name']
+        if '.' in self.name:
+            self.name = self.name.rsplit('.', 1)[-1]
 
         self.database_id = None
         if api_content['object_class'] == self.OBJ_CLASS_DATABASE:
