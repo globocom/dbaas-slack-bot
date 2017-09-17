@@ -61,14 +61,15 @@ class TestDBaaSTasks(TestCase):
             {
                 'id': 1090, 'task_id': 'iiioo-xxxsads', 'task_status': 'ERROR',
                 'task_name': 'status.dbaas', 'user': 'admin',
-                'object_class': None, 'object_id': None,
+                'object_class': None, 'object_id': None, 'database': None,
                 'created_at': '2019-09-12', 'updated_at': '2019-09-13',
             },
             {
                 'id': 1091, 'task_id': 'xxxaa-yyyuu', 'task_status': 'RUNNING',
                 'task_name': 'database.create', 'user': 'fake.user',
                 'object_class': 'logical_database', 'object_id': '123',
-                'created_at': '2019-09-13', 'updated_at': '2019-09-14',
+                'database': None, 'created_at': '2019-09-13',
+                'updated_at': '2019-09-14',
             },
         ]}
 

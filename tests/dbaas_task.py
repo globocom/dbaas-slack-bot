@@ -32,15 +32,15 @@ class TestDBaaSTasks(TestCase):
         self.assertTrue(self.task.is_error)
 
     def test_task_db(self):
-        self.assertEqual(self.task.database_id, None)
-        self.assertEqual(self.task_db.database_id, 123)
+        self.assertEqual(self.task.database, None)
+        self.assertEqual(self.task_db.database.db_id, 123)
 
     def test_message_database(self):
         self.assertEqual(
             self.task_db.as_message(),
             "{} in '{}' doing '{}', by {} at {} - {}".format(
                 self.task_db.status.capitalize(),
-                self.task_db.database_id,
+                self.task_db.database,
                 self.task_db.name,
                 self.task_db.user,
                 self.task_db.updated_at,
@@ -66,7 +66,7 @@ class TestDBaaSTasks(TestCase):
             self.task_db.as_message(),
             "{} in '{}' doing '{}', at {} - {}".format(
                 self.task_db.status.capitalize(),
-                self.task_db.database_id,
+                self.task_db.database,
                 self.task_db.name,
                 self.task_db.updated_at,
                 self.task_db.link
