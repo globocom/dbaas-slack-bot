@@ -3,3 +3,4 @@ redis
 flask
 gunicorn
 gevent
+Redis-Sentinel-Url==1.0.1
