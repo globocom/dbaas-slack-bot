@@ -67,7 +67,7 @@ class Bot(object):
     def get_direct_messages(self):
         commands = self.receive_command()
         if not commands:
-            return None
+            return []
 
         for command in commands:
             if not('type' in command and 'text' in command):
