@@ -1,13 +1,16 @@
 # from redis import StrictRedis
-import redis_sentinel_url
-from src.settings import REDIS_URL_CONNECTION, REDIS_KEY_TTL
+from redis.sentinel import Sentinel
+from src.settings import (REDIS_KEY_TTL, DBAAS_SENTINEL_ENDPOINT_SIMPLE,
+                          DBAAS_SENTINEL_SERVICE_NAME, DBAAS_SENTINEL_PASSWORD)
 
 
 class Persistence(object):
 
     def __init__(self):
-        # self.client = StrictRedis.from_url(REDIS_URL_CONNECTION)
-        self.sentinel, self.client = redis_sentinel_url.connect('redis+{}'.format(REDIS_URL_CONNECTION))
+        hosts_sentinel = DBAAS_SENTINEL_ENDPOINT_SIMPLE.replace("sentinel://", "")
+        sentinels = list(map(lambda sentinel: tuple(sentinel.split(':')), hosts_sentinel.split(',')))
+        sentinel = Sentinel(sentinels, socket_timeout=1)
+        self.client = sentinel.master_for(DBAAS_SENTINEL_SERVICE_NAME, socket_timeout=1, password=DBAAS_SENTINEL_PASSWORD)
         self.ttl_seconds = REDIS_KEY_TTL
 
     def was_notified(self, task):
