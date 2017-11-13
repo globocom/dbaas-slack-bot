@@ -65,11 +65,7 @@ class Bot(object):
 
 
     def get_direct_messages(self):
-        commands = self.receive_command()
-        if not commands:
-            return None
-
-        for command in commands:
+        for command in self.receive_command():
             if not('type' in command and 'text' in command):
                 debug('Content invalid in {}'.format(command))
                 continue
