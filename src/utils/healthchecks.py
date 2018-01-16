@@ -19,9 +19,9 @@ def bot_check():
     from src.slack.slack_bot import Bot
     try:
         bot = Bot()
-        assert len(bot.my_channels) > 0
+        assert len(bot.my_channels) > 0, "Bot do not have channels"
     except Exception as e:
-        return False, e
+        return False, str(e)
     else:
         return True, 'OK'
 

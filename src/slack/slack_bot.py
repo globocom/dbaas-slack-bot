@@ -141,7 +141,7 @@ class BotMessageStatus(BotMessage):
         if total >= 4:
             message = 'Everything is fine'
         elif total >= 3:
-            message = 'I\'m with one problem'
+            message = 'I have one problem'
         elif total >= 1:
             message = 'I\'m in trouble'
         else:
