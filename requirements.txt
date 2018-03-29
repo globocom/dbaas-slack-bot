@@ -1,4 +1,4 @@
-slackclient
+slackclient==1.2.1
 redis
 flask
 gunicorn
