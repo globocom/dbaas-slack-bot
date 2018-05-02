@@ -1,6 +1,6 @@
 slackclient==1.2.1
 redis==2.10.6
-flask==0.12.2
+flask==1.0.2
 gunicorn==19.7.1
 gevent==1.2.2
 Redis-Sentinel-Url==1.0.1
