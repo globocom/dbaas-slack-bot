@@ -49,7 +49,7 @@ def main():
 
             if not persistence.was_notified(task):
                 info('Notifying {}'.format(task.id))
-                bot.send_message(task.as_message())
+                bot.send_message(task.as_message(), task.relevance)
 
             persistence.set_notified(task)
 
