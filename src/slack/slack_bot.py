@@ -12,6 +12,7 @@ class Bot(object):
         self.slack_client = SlackClient(SLACK_TOKEN, SLACK_PROXIES)
         self.name = '<@{}>'.format(SLACK_BOT_ID)
         self.rtm_reconnect_url = None
+        self.persistence = Persistence()
 
     @property
     def my_channels(self):
@@ -28,9 +29,9 @@ class Bot(object):
             "chat.postMessage", channel=channel, text=message, as_user=True
         )
 
-    def send_message(self, message):
-        for channel in self.my_channels:
-            print("channel: ", channel)
+    def send_message(self, message, relevance):
+        channels_list = self.persistence.get_relevances_id(relevance)
+        for channel in channels_list:
             self.send_message_in_channel(message, channel)
 
     def receive_command(self):
@@ -67,7 +68,6 @@ class Bot(object):
 
     def get_direct_messages(self):
         for command in self.receive_command():
-            print("COMANDO: ", command)
             if not('type' in command and 'text' in command):
                 debug('Content invalid in {}'.format(command))
                 continue
@@ -93,8 +93,6 @@ class BotMessage(object):
     def build(cls, channel, text):
         parsed_text = text.lower()
         for klass in cls.__subclasses__():
-            print("klass: ", klass)
-            # import pdb; pdb.set_trace()
             if klass.commands(parsed_text):
                 return klass(channel, text)
 
@@ -176,8 +174,7 @@ class BotMessageSetChannel(BotMessage):
         import re
         return re.match(r"(set.*to.*)", message)
 
-    @property
-    def message(self):
+    def set_channel_bot(self):
         self.text = self.text.strip()
 
         relevance = self.text.split("to", 1)[-1].strip().upper()
@@ -190,6 +187,11 @@ class BotMessageSetChannel(BotMessage):
 
         self.persistence = Persistence()
         self.persistence.set_channel(channel_id, relevance_id)
+        return channel, relevance
+
+    @property
+    def message(self):
+        channel, relevance = self.set_channel_bot()
         return "Set '{}' to relevance '{}'".format(channel, relevance)
 
 
@@ -200,8 +202,7 @@ class BotMessageUnsetChannel(BotMessage):
         import re
         return re.match(r"(unset.*to.*)", message)
 
-    @property
-    def message(self):
+    def unset_channel_bot(self):
         self.text = self.text.strip()
 
         relevance = self.text.split("to", 1)[-1].strip().upper()
@@ -214,4 +215,9 @@ class BotMessageUnsetChannel(BotMessage):
 
         self.persistence = Persistence()
         self.persistence.unset_channel(relevance_id)
+        return channel, relevance
+
+    @property
+    def message(self):
+        channel, relevance = self.unset_channel_bot()
         return "Unset '{}' to relevance '{}'".format(channel, relevance)
