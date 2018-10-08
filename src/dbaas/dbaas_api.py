@@ -71,8 +71,9 @@ class Task(object):
         """
             Error in 'database' doing 'resize', by user at 2017-06-11 link
             Error doing 'update_status', at 2017-06-12 link
+            [RELEVANCE] Error doing 'update_status', by user at 2017-06-11 link
         """
-        message = '{} '.format(self.status.capitalize(), self.name)
+        message = '[{}] {} '.format(self.relevance, self.status.capitalize(), self.name)
 
         if self.database:
             message += 'in \'{}\' '.format(self.database)
