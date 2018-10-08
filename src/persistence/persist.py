@@ -1,5 +1,4 @@
-# from redis import StrictRedis
-from redis.sentinel import Sentinel
+from redis.sentinel import StrictRedis, Sentinel
 from src.settings import (REDIS_KEY_TTL, DBAAS_SENTINEL_ENDPOINT_SIMPLE,
                           DBAAS_SENTINEL_SERVICE_NAME, DBAAS_SENTINEL_PASSWORD)
 
@@ -7,10 +6,12 @@ from src.settings import (REDIS_KEY_TTL, DBAAS_SENTINEL_ENDPOINT_SIMPLE,
 class Persistence(object):
 
     def __init__(self):
-        hosts_sentinel = DBAAS_SENTINEL_ENDPOINT_SIMPLE.replace("sentinel://", "")
-        sentinels = list(map(lambda sentinel: tuple(sentinel.split(':')), hosts_sentinel.split(',')))
-        sentinel = Sentinel(sentinels, socket_timeout=1)
-        self.client = sentinel.master_for(DBAAS_SENTINEL_SERVICE_NAME, socket_timeout=1, password=DBAAS_SENTINEL_PASSWORD)
+        #hosts_sentinel = DBAAS_SENTINEL_ENDPOINT_SIMPLE.replace("sentinel://", "")
+        #sentinels = list(map(lambda sentinel: tuple(sentinel.split(':')), hosts_sentinel.split(',')))
+        #sentinel = Sentinel(sentinels, socket_timeout=1)
+        #self.client = sentinel.master_for(DBAAS_SENTINEL_SERVICE_NAME, socket_timeout=1,
+        # password=DBAAS_SENTINEL_PASSWORD)
+        self.client = StrictRedis()
         self.ttl_seconds = REDIS_KEY_TTL
 
     def was_notified(self, task):
@@ -18,3 +19,10 @@ class Persistence(object):
 
     def set_notified(self, task):
         self.client.set(task.id, task.__dict__, self.ttl_seconds)
+
+    def set_channel(self, channel_id, relevance_id):
+        self.client.set(relevance_id, channel_id)
+
+    def unset_channel(self, relevance_id):
+        self.client.delete(relevance_id)
+

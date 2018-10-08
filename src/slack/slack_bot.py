@@ -3,6 +3,7 @@ from slackclient import SlackClient
 from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
 from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
     persistence_check
+from src.persistence.persist import Persistence
 
 
 class Bot(object):
@@ -15,7 +16,6 @@ class Bot(object):
     @property
     def my_channels(self):
         response = self.slack_client.api_call("channels.list")
-
         channels = []
         for channel in response['channels']:
             if channel['is_member']:
@@ -30,6 +30,7 @@ class Bot(object):
 
     def send_message(self, message):
         for channel in self.my_channels:
+            print("channel: ", channel)
             self.send_message_in_channel(message, channel)
 
     def receive_command(self):
@@ -66,6 +67,7 @@ class Bot(object):
 
     def get_direct_messages(self):
         for command in self.receive_command():
+            print("COMANDO: ", command)
             if not('type' in command and 'text' in command):
                 debug('Content invalid in {}'.format(command))
                 continue
@@ -91,7 +93,9 @@ class BotMessage(object):
     def build(cls, channel, text):
         parsed_text = text.lower()
         for klass in cls.__subclasses__():
-            if parsed_text in klass.commands():
+            print("klass: ", klass)
+            # import pdb; pdb.set_trace()
+            if klass.commands(parsed_text):
                 return klass(channel, text)
 
         return BotMessageInvalid(channel, text)
@@ -101,7 +105,7 @@ class BotMessage(object):
         self.text = text
 
     @classmethod
-    def commands(self):
+    def commands(self, *args):
         raise NotImplementedError
 
     @property
@@ -115,8 +119,8 @@ class BotMessage(object):
 class BotMessageHelp(BotMessage):
 
     @classmethod
-    def commands(self):
-        return ["help"]
+    def commands(self, message):
+        return message in ["help"]
 
     @property
     def message(self):
@@ -127,8 +131,8 @@ class BotMessageHelp(BotMessage):
 class BotMessageStatus(BotMessage):
 
     @classmethod
-    def commands(self):
-        return ['status', 'how are you?', 'healthcheck', 'health-check']
+    def commands(self, message):
+        return message in ['status', 'how are you?', 'healthcheck', 'health-check']
 
     @property
     def message(self):
@@ -155,7 +159,7 @@ class BotMessageStatus(BotMessage):
 class BotMessageInvalid(BotMessageHelp):
 
     @classmethod
-    def commands(self):
+    def commands(self, *args):
         return []
 
     @property
@@ -163,3 +167,51 @@ class BotMessageInvalid(BotMessageHelp):
         help_message = super(BotMessageInvalid, self).message
         invalid_message = "I do not understand '{}'".format(self.text)
         return '{}\n{}'.format(invalid_message, help_message)
+
+
+class BotMessageSetChannel(BotMessage):
+
+    @classmethod
+    def commands(self, message):
+        import re
+        return re.match(r"(set.*to.*)", message)
+
+    @property
+    def message(self):
+        self.text = self.text.strip()
+
+        relevance = self.text.split("to", 1)[-1].strip().upper()
+        self.text = self.text.split("to", 1)[0].strip()
+
+        channel = self.text.split("set ", 1)[-1].strip()
+        channel_id = (channel.split("#", 1)[-1]).split("|")[0]
+
+        relevance_id = "{}_{}".format(relevance, channel_id)
+
+        self.persistence = Persistence()
+        self.persistence.set_channel(channel_id, relevance_id)
+        return "Set '{}' to relevance '{}'".format(channel, relevance)
+
+
+class BotMessageUnsetChannel(BotMessage):
+
+    @classmethod
+    def commands(self, message):
+        import re
+        return re.match(r"(unset.*to.*)", message)
+
+    @property
+    def message(self):
+        self.text = self.text.strip()
+
+        relevance = self.text.split("to", 1)[-1].strip().upper()
+        self.text = self.text.split("to", 1)[0].strip()
+
+        channel = self.text.split("set ", 1)[-1].strip()
+        channel_id = (channel.split("#", 1)[-1]).split("|")[0]
+
+        relevance_id = "{}_{}".format(relevance, channel_id)
+
+        self.persistence = Persistence()
+        self.persistence.unset_channel(relevance_id)
+        return "Unset '{}' to relevance '{}'".format(channel, relevance)
