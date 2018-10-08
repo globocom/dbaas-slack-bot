@@ -13,6 +13,13 @@ class Bot(object):
         self.name = '<@{}>'.format(SLACK_BOT_ID)
         self.rtm_reconnect_url = None
         self.persistence = Persistence()
+        self.relevance_weight = {
+            "CRITICAL": 20,
+            "ERROR": 15,
+            "WARNING": 10,
+            "INFO": 7,
+            "DEBUG": 5
+        }
 
     @property
     def my_channels(self):
@@ -30,9 +37,12 @@ class Bot(object):
         )
 
     def send_message(self, message, relevance):
-        channels_list = self.persistence.get_relevances_id(relevance)
-        for channel in channels_list:
-            self.send_message_in_channel(message, channel)
+        relevance_value = self.relevance_weight[relevance]
+        for key, value in self.relevance_weight.items():
+            if relevance_value >= value:
+                channels_list = self.persistence.get_relevances_id(key)
+                for channel in channels_list:
+                    self.send_message_in_channel(message, channel)
 
     def receive_command(self):
         try:
@@ -101,6 +111,7 @@ class BotMessage(object):
     def __init__(self, channel, text):
         self.channel = channel
         self.text = text
+        self.persistence = Persistence()
 
     @classmethod
     def commands(self, *args):
@@ -185,7 +196,6 @@ class BotMessageSetChannel(BotMessage):
 
         relevance_id = "{}_{}".format(relevance, channel_id)
 
-        self.persistence = Persistence()
         self.persistence.set_channel(channel_id, relevance_id)
         return channel, relevance
 
@@ -213,7 +223,6 @@ class BotMessageUnsetChannel(BotMessage):
 
         relevance_id = "{}_{}".format(relevance, channel_id)
 
-        self.persistence = Persistence()
         self.persistence.unset_channel(relevance_id)
         return channel, relevance
 
