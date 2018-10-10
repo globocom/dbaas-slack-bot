@@ -180,21 +180,29 @@ class BotMessageInvalid(BotMessageHelp):
         return '{}\n{}'.format(invalid_message, help_message)
 
 
-class BotMessageChannel():
+class BotConfigureChannel(object):
 
-    def split_bot_message(self, text):
-        text = text.strip()
+    def __init__(self, *args, **kwargs):
+        super(BotConfigureChannel, self).__init__(*args, **kwargs)
+        self.configure()
 
-        relevance = text.split("to", 1)[-1].strip().upper()
+    def configure(self):
+        text = self.text.strip()
+
+        self.relevance = text.split("to", 1)[-1].strip().upper()
         text = text.split("to", 1)[0].strip()
 
-        channel = text.split("set ", 1)[-1].strip()
-        channel_id = (channel.split("#", 1)[-1]).split("|")[0]
+        self.channel_bot = text.split("set ", 1)[-1].strip()
+        self.channel_bot_id = (
+            self.channel_bot.split("#", 1)[-1]
+        ).split("|")[0]
 
-        return relevance, channel_id, channel
+    @property
+    def relevance_id(self):
+        return "{}_{}".format(self.relevance, self.channel_bot_id)
 
 
-class BotMessageSetChannel(BotMessage):
+class BotMessageSetChannel(BotConfigureChannel, BotMessage):
 
     @classmethod
     def commands(self, message):
@@ -202,21 +210,22 @@ class BotMessageSetChannel(BotMessage):
         return re.match(r"(set.*to.*)", message)
 
     def set_channel_bot(self):
-        bot_message_channel = BotMessageChannel()
-        relevance, channel_id, channel = bot_message_channel.split_bot_message(
-            self.text
-        )
-        relevance_id = "{}_{}".format(relevance, channel_id)
-        self.persistence.set_channel(channel_id, relevance_id)
-        return channel, relevance
+        self.persistence.set_channel(self.channel_bot_id, self.relevance_id)
 
     @property
     def message(self):
-        channel, relevance = self.set_channel_bot()
-        return "Set '{}' to relevance '{}'".format(channel, relevance)
+        try:
+            self.set_channel_bot()
+            return "OK: Set {} to relevance {}".format(
+                self.channel_bot,
+                self.relevance
+            )
+        except Exception as e:
+            return "NOT OK: {}".format(e)
 
 
-class BotMessageUnsetChannel(BotMessage):
+
+class BotMessageUnsetChannel(BotConfigureChannel, BotMessage):
 
     @classmethod
     def commands(self, message):
@@ -224,15 +233,15 @@ class BotMessageUnsetChannel(BotMessage):
         return re.match(r"(unset.*to.*)", message)
 
     def unset_channel_bot(self):
-        bot_message_channel = BotMessageChannel()
-        relevance, channel_id, channel = bot_message_channel.split_bot_message(
-            self.text
-        )
-        relevance_id = "{}_{}".format(relevance, channel_id)
-        self.persistence.unset_channel(relevance_id)
-        return channel, relevance
+        self.persistence.unset_channel(self.relevance_id)
 
     @property
     def message(self):
-        channel, relevance = self.unset_channel_bot()
-        return "Unset '{}' to relevance '{}'".format(channel, relevance)
+        try:
+            self.unset_channel_bot()
+            return "OK: Unset {} to relevance {}".format(
+                self.channel_bot,
+                self.relevance
+            )
+        except Exception as e:
+            return "NOT OK: {}".format(e)
