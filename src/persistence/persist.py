@@ -9,9 +9,12 @@ class Persistence(object):
         hosts_sentinel = DBAAS_SENTINEL_ENDPOINT_SIMPLE.replace("sentinel://", "")
         sentinels = list(map(lambda sentinel: tuple(sentinel.split(':')), hosts_sentinel.split(',')))
         sentinel = Sentinel(sentinels, socket_timeout=1)
-        self.client = sentinel.master_for(DBAAS_SENTINEL_SERVICE_NAME,
-                                          socket_timeout=1,
-                                          password=DBAAS_SENTINEL_PASSWORD)
+        self.client = sentinel.master_for(
+            DBAAS_SENTINEL_SERVICE_NAME,
+            socket_timeout=1,
+            password=DBAAS_SENTINEL_PASSWORD
+        )
+        self.ttl_seconds = REDIS_KEY_TTL
 
     def was_notified(self, task):
         return self.client.exists(task.id)
@@ -25,7 +28,7 @@ class Persistence(object):
     def unset_channel(self, relevance_id):
         self.client.delete(relevance_id)
 
-    def get_relevances_id(self, relevance):
+    def channels_for(self, relevance):
         relevance_query = "{}_*".format(relevance)
         keys_list = self.client.keys(relevance_query)
         channels_list = []

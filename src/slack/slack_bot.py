@@ -42,7 +42,7 @@ class Bot(object):
         relevance_value = RELEVANCE_WEIGHT[relevance]
         for key, value in RELEVANCE_WEIGHT.items():
             if relevance_value >= value:
-                channels_list = self.persistence.get_relevances_id(key)
+                channels_list = self.persistence.channels_for(key)
                 for channel in channels_list:
                     self.send_message_in_channel(message, channel)
 
