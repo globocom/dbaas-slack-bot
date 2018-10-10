@@ -31,7 +31,5 @@ class Persistence(object):
     def channels_for(self, relevance):
         relevance_query = "{}_*".format(relevance)
         keys_list = self.client.keys(relevance_query)
-        channels_list = []
-        for key in keys_list:
-            channels_list.append(self.client.get(key))
-        return channels_list
+        return [client.get(key) for key in keys_list]
+
