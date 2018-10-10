@@ -224,7 +224,6 @@ class BotMessageSetChannel(BotConfigureChannel, BotMessage):
             return "NOT OK: {}".format(e)
 
 
-
 class BotMessageUnsetChannel(BotConfigureChannel, BotMessage):
 
     @classmethod
