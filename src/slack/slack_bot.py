@@ -203,7 +203,9 @@ class BotMessageSetChannel(BotMessage):
 
     def set_channel_bot(self):
         bot_message_channel = BotMessageChannel()
-        relevance, channel_id, channel = bot_message_channel.split_bot_message(self.text)
+        relevance, channel_id, channel = bot_message_channel.split_bot_message(
+            self.text
+        )
         relevance_id = "{}_{}".format(relevance, channel_id)
         self.persistence.set_channel(channel_id, relevance_id)
         return channel, relevance
@@ -223,7 +225,9 @@ class BotMessageUnsetChannel(BotMessage):
 
     def unset_channel_bot(self):
         bot_message_channel = BotMessageChannel()
-        relevance, channel_id, channel = bot_message_channel.split_bot_message(self.text)
+        relevance, channel_id, channel = bot_message_channel.split_bot_message(
+            self.text
+        )
         relevance_id = "{}_{}".format(relevance, channel_id)
         self.persistence.unset_channel(relevance_id)
         return channel, relevance
