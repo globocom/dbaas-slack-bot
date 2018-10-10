@@ -40,11 +40,11 @@ class Task(object):
     OBJ_CLASS_DATABASE = 'logical_database'
 
     relevance_dict = {
-        "0": "CRITICAL",
-        "1": "ERROR",
-        "2": "WARNING",
-        "3": "INFO",
-        "4": "DEBUG"
+        0: "CRITICAL",
+        1: "ERROR",
+        2: "WARNING",
+        3: "INFO",
+        4: "DEBUG"
     }
 
     def __init__(self, api_content):
@@ -61,7 +61,7 @@ class Task(object):
         self.started_at = api_content['created_at']
         self.updated_at = api_content['updated_at']
         self.link = self.DBAAS_TASK_URL.format(DBAAS_URL, self.id)
-        self.relevance = self.relevance_dict[str(api_content['relevance'])]
+        self.relevance = self.relevance_dict[api_content['relevance']]
 
     @property
     def is_error(self):
