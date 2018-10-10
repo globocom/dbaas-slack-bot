@@ -69,11 +69,10 @@ class Task(object):
 
     def as_message(self):
         """
-            Error in 'database' doing 'resize', by user at 2017-06-11 link
-            Error doing 'update_status', at 2017-06-12 link
-            [RELEVANCE] Error doing 'update_status', by user at 2017-06-11 link
+            [RELEVANCE] Error in 'database' doing 'resize', by user at 2017-06-11 link
+            [RELEVANCE] Error doing 'update_status', at 2017-06-12 link
         """
-        message = '[{}] {} '.format(self.relevance, self.status.capitalize(), self.name)
+        message = '[{}] {} '.format(self.relevance, self.status.capitalize())
 
         if self.database:
             message += 'in \'{}\' '.format(self.database)
