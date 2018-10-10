@@ -39,6 +39,14 @@ class Task(object):
     DBAAS_TASK_URL = '{}/admin/notification/taskhistory/{}'
     OBJ_CLASS_DATABASE = 'logical_database'
 
+    relevance_dict = {
+        0: "CRITICAL",
+        1: "ERROR",
+        2: "WARNING",
+        3: "INFO",
+        4: "DEBUG"
+    }
+
     def __init__(self, api_content):
         self.id = api_content['id']
         self.executor_id = api_content['task_id']
@@ -53,6 +61,7 @@ class Task(object):
         self.started_at = api_content['created_at']
         self.updated_at = api_content['updated_at']
         self.link = self.DBAAS_TASK_URL.format(DBAAS_URL, self.id)
+        self.relevance = self.relevance_dict[api_content['relevance']]
 
     @property
     def is_error(self):
@@ -60,10 +69,10 @@ class Task(object):
 
     def as_message(self):
         """
-            Error in 'database' doing 'resize', by user at 2017-06-11 link
-            Error doing 'update_status', at 2017-06-12 link
+            [RELEVANCE] Error in 'database' doing 'resize', by user at 2017-06-11 link
+            [RELEVANCE] Error doing 'update_status', at 2017-06-12 link
         """
-        message = '{} '.format(self.status.capitalize(), self.name)
+        message = '[{}] {} '.format(self.relevance, self.status.capitalize())
 
         if self.database:
             message += 'in \'{}\' '.format(self.database)
