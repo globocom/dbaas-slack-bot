@@ -61,7 +61,9 @@ class Task(object):
         self.started_at = api_content['created_at']
         self.updated_at = api_content['updated_at']
         self.link = self.DBAAS_TASK_URL.format(DBAAS_URL, self.id)
-        self.relevance = self.relevance_dict[api_content['relevance']]
+        self.relevance = self.relevance_dict[api_content['relevance']] \
+            if 'relevance' in api_content \
+            delse 'CRITICAL'
 
     @property
     def is_error(self):
