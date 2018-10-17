@@ -36,8 +36,8 @@ def send_notification():
     if not message:
         return 'Content must have message field', 400
 
-    relevance = content.get('relevance', '')
-    if not relevance or str(relevance).upper() not in RELEVANCE_LIST:
+    relevance = content.get('relevance', '').upper()
+    if not relevance or relevance not in RELEVANCE_LIST:
         relevance = 'CRITICAL'
 
     try:

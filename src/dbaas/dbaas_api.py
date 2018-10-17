@@ -1,5 +1,6 @@
 from requests import get
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import ConnectionError
 from src.settings import DBAAS_URL, DBAAS_USER, DBAAS_PASSWORD, \
     DBAAS_HTTPS_VERIFY
 
@@ -53,9 +54,7 @@ class Task(object):
         self.started_at = api_content['created_at']
         self.updated_at = api_content['updated_at']
         self.link = self.DBAAS_TASK_URL.format(DBAAS_URL, self.id)
-        self.relevance = api_content['relevance'] \
-            if 'relevance' in api_content \
-            else 'CRITICAL'
+        self.relevance = api_content.get('relevance', 'CRITICAL')
 
     @property
     def is_error(self):
