@@ -2,8 +2,6 @@ from flask import Flask, request
 from src.slack.slack_bot import Bot
 from src.utils.healthchecks import bot_check, persistence_check
 
-RELEVANCE_LIST = ["INFO", "DEBUG", "WARNING", "ERROR", "CRITICAL"]
-
 
 app = Flask('errors_from_api')
 
@@ -36,9 +34,7 @@ def send_notification():
     if not message:
         return 'Content must have message field', 400
 
-    relevance = content.get('relevance', '').upper()
-    if not relevance or relevance not in RELEVANCE_LIST:
-        relevance = 'CRITICAL'
+    relevance = content.get('relevance', 'CRITICAL').upper()
 
     try:
         Bot().send_message(message, relevance)
