@@ -34,8 +34,8 @@ class Bot(object):
 
     def send_message(self, message, relevance):
         all_relevances = RELEVANCE_LIST[RELEVANCE_LIST.index(relevance):]
-        for relevance in all_relevances:
-            channels_list = self.persistence.channels_for(relevance)
+        for relevance_name in all_relevances:
+            channels_list = self.persistence.channels_for(relevance_name)
             for channel in channels_list:
                     self.send_message_in_channel(message, channel)
 
