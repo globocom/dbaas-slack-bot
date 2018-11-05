@@ -34,8 +34,10 @@ def send_notification():
     if not message:
         return 'Content must have message field', 400
 
+    relevance = content.get('relevance', 'CRITICAL').upper()
+
     try:
-        Bot().send_message(message)
+        Bot().send_message(message, relevance)
     except Exception as e:
         return e, 400
     else:
