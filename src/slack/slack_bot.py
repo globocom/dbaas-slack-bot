@@ -6,13 +6,7 @@ from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
 from src.persistence.persist import Persistence
 
 
-RELEVANCE_WEIGHT = {
-    "CRITICAL": 50,
-    "ERROR": 40,
-    "WARNING": 30,
-    "INFO": 20,
-    "DEBUG": 10
-}
+RELEVANCE_LIST = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
 
 
 class Bot(object):
@@ -39,11 +33,10 @@ class Bot(object):
         )
 
     def send_message(self, message, relevance):
-        relevance_value = RELEVANCE_WEIGHT[relevance]
-        for key, value in RELEVANCE_WEIGHT.items():
-            if relevance_value >= value:
-                channels_list = self.persistence.channels_for(key)
-                for channel in channels_list:
+        all_relevances = RELEVANCE_LIST[RELEVANCE_LIST.index(relevance):]
+        for relevance in all_relevances:
+            channels_list = self.persistence.channels_for(relevance)
+            for channel in channels_list:
                     self.send_message_in_channel(message, channel)
 
     def receive_command(self):
