@@ -15,8 +15,8 @@ class DBaaS(object):
         final_url = '{}/api/{}'.format(DBAAS_URL, endpoint)
         return get(final_url, auth=self._base_auth, verify=self._verify)
 
-    def latest_tasks(self, page_size=100):
-        tasks_url = 'task/?ordering=-updated_at&page_size={}'.format(page_size)
+    def latest_tasks(self, page_size=20):
+        tasks_url = 'task/?ordering=-updated_at&page_size={}&task_status=ERROR'.format(page_size)
         response = self.api_get(tasks_url)
 
         if response.status_code != 200:
@@ -122,5 +122,3 @@ class Database(object):
             database += '({})'.format('/'.join(attributes))
 
         return database
-
-
