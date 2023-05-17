@@ -1,12 +1,17 @@
 from logging import debug, info
 from slackclient import SlackClient
-from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID
-from src.utils.healthchecks import api_check, bot_check, dbaas_check, \
-    persistence_check
+from src.settings import SLACK_TOKEN, SLACK_PROXIES, SLACK_BOT_ID, SLACK_TOKEN_DBDEV, CHANNEL_DBDEV
+from src.utils.healthchecks import api_check, bot_check, dbaas_check, persistence_check
 from src.persistence.persist import Persistence
 
 
 RELEVANCE_LIST = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
+
+
+class BotDBDev(object):
+    def send_message_in_channel(self, message):
+        slack_client = SlackClient(SLACK_TOKEN_DBDEV, SLACK_PROXIES)
+        slack_client.api_call("chat.postMessage", channel=CHANNEL_DBDEV, text=message, as_user=True)
 
 
 class Bot(object):

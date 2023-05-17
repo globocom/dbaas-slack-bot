@@ -1,5 +1,5 @@
 from flask import Flask, request
-from src.slack.slack_bot import Bot
+from src.slack.slack_bot import Bot, BotDBDev
 from src.utils.healthchecks import bot_check, persistence_check
 
 
@@ -42,6 +42,22 @@ def send_notification():
         return e, 400
     else:
         return 'OK', 201
+
+@app.route("/alerta", methods=['POST'])
+def send_message_to_dbdev():
+    content = request.get_json()
+    if not content:
+        return 'Could not load the json', 400
+
+    message = content.get('message', '')
+    if not message:
+        return 'Content must have message field', 400
+
+    try:
+        BotDBDev().send_message_in_channel(message)
+    except Exception as e:
+        return e, 400
+    return 'OK', 201
 
 
 if __name__ == "__main__":
