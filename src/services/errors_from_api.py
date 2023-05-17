@@ -43,8 +43,26 @@ def send_notification():
     else:
         return 'OK', 201
 
+
+@app.route("/alerta", methods=['GET'])
+def send_message_to_dbdev_get():
+    content = request.args
+    if not content:
+        return 'Could not load the json', 400
+
+    message = content.get('m', '')
+    if not message:
+        return 'Content must have message field', 400
+
+    try:
+        BotDBDev().send_message_in_channel(message)
+    except Exception as e:
+        return e, 400
+    return 'OK', 201
+
+
 @app.route("/alerta", methods=['POST'])
-def send_message_to_dbdev():
+def send_message_to_dbdev_post():
     content = request.get_json()
     if not content:
         return 'Could not load the json', 400
