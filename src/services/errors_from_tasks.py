@@ -48,8 +48,9 @@ def main():
                 continue
 
             if not persistence.was_notified(task):
-                info('Notifying {}'.format(task.id))
-                bot.send_message(task.as_message(), task.relevance)
+                if 'check_database_is_alive' not in tasks.as_message():
+                    info('Notifying {}'.format(task.id))
+                    bot.send_message(task.as_message(), task.relevance)
 
             persistence.set_notified(task)
 
