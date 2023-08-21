@@ -39,6 +39,7 @@ def send_notification():
     try:
         Bot().send_message(message, relevance)
     except Exception as e:
+        BotDBDev().send_message_in_channel(f"Error to send the message: {str(message)}\nError: {e}.")
         return e, 400
     else:
         return 'OK', 201
@@ -57,6 +58,7 @@ def send_message_to_dbdev_get():
     try:
         BotDBDev().send_message_in_channel(message)
     except Exception as e:
+        BotDBDev().send_message_in_channel(f"Error to send the message: {str(message)}\nError: {e}.")
         return e, 400
     return 'OK', 201
 
@@ -74,6 +76,7 @@ def send_message_to_dbdev_post():
     try:
         BotDBDev().send_message_in_channel(message)
     except Exception as e:
+        BotDBDev().send_message_in_channel(f"Error to send the message: {str(message)}\nError: {e}.")
         return e, 400
     return 'OK', 201
 
