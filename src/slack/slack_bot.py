@@ -9,9 +9,12 @@ RELEVANCE_LIST = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
 
 
 class BotDBDev(object):
-    def send_message_in_channel(self, message):
+    def send_message_in_channel(self, message, channel_id=None):
         slack_client = SlackClient(SLACK_TOKEN_DBDEV, SLACK_PROXIES)
-        slack_client.api_call("chat.postMessage", channel=CHANNEL_DBDEV, text=message, as_user=True)
+        if channel_id is None:
+            channel_id = CHANNEL_DBDEV
+
+        slack_client.api_call("chat.postMessage", channel=channel_id, text=message, as_user=True)
 
 
 class Bot(object):
