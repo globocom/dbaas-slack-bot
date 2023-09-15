@@ -75,7 +75,6 @@ def send_message_to_dbdev_post():
     if content.get('channel_id', '1') != '1':
         channel_id = content.get('channel_id')
 
-
     try:
         BotDBDev().send_message_in_channel(message, channel_id)
     except Exception as e:
