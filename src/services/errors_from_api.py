@@ -71,8 +71,12 @@ def send_message_to_dbdev_post():
     if not message:
         return 'Content must have message field', 400
 
+    channel_id = None
+    if content.get('channel_id', '1') != '1':
+        channel_id = content.get('channel_id')
+
     try:
-        BotDBDev().send_message_in_channel(message)
+        BotDBDev().send_message_in_channel(message, channel_id)
     except Exception as e:
         return e, 400
     return 'OK', 201
