@@ -1,5 +1,5 @@
 slackclient==1.2.1
-redis==2.10.6
+redis==3.0.1
 flask==0.12.2
 gunicorn==19.7.1
 gevent==1.2.2
